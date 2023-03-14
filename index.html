@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Recibo de Pagamento</title>
+</head>
+<body onload='onSubmit()'>
+  <form class="form" id="form">
+    <h1>Recibo de Pagamento</h1>
+    <label for="valor">Valor:</label>
+    <input type="number" id="valor" name="valor" placeholder="0,00">
+
+    <label for="pagador">Nome do Pagador:</label>
+    <input type="text" id="pagador" name="pagador">
+
+    <label for="cpf">CPF ou CNPJ:</label>
+    <input type="text" name="cpf">
+
+    <label for="referente">Referente à:</label>
+    <input type="text" name="referente">
+
+    <section class="cidade_data">
+      <div style="display: flex; flex-direction: column; flex: 1 1 0%;">
+          <Label for="cidade">Cidade:</Label>
+          <input type="text" name="cidade">
+      </div>
+      <div  style="display: flex; flex-direction: column; flex: 1 1 0%;">
+          <label for="datapagamento">Data:</label>
+          <input type="date" name="datapagamento">
+      </div>
+    </section>
+
+      <label for="emissor">Nome do Emissor:</label>
+      <input type="text" name="emissor">
+
+      <label for="telefone_emissor">Telefone (opcional):</label>
+      <input type="number" name="telefone_emissor">
+
+      <label for="cpf_cnpj_emissor">CPF ou CNPJ (opcional):</label>
+      <input type="number" name="cpf_cnpj_emissor">
+
+      <label for="observacoes">Observações:</label>
+      <input type="text" name="observacoes">
+
+      <input type="submit" value="Gerar Recibo" />
+  </form>
+
+  <script src="index.js"></script>
+</body>
+</html>
