@@ -1,53 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>Recibo de Pagamento</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de commits</title>
 </head>
-<body onload='onSubmit()'>
-  <form class="form" id="form">
-    <h1>Recibo de Pagamento</h1>
-    <label for="valor">Valor:</label>
-    <input type="number" id="valor" name="valor" placeholder="0,00">
 
-    <label for="pagador">Nome do Pagador:</label>
-    <input type="text" id="pagador" name="pagador">
+<body>
+    <form>
+        <label>Repositório</label>
+        <input type="text" id="repositorio"></input><br /><br />
+        <label>Data inicial</label>
+        <input type="date" id="dataInicial"></input><br /><br />
+        <label>Data final</label>
+        <input type="date" id="dataFinal"></input><br /><br />
+        <input type="submit" value="Pesquisar" />
+    </form>
 
-    <label for="cpf">CPF ou CNPJ:</label>
-    <input type="text" name="cpf">
+    <div id="dados"></div>
 
-    <label for="referente">Referente à:</label>
-    <input type="text" name="referente">
+    <script>
+        const form = document.querySelector("form");
+        form.addEventListener('submit', function (event) {
+            event.preventDefault(); // Remove o refresh da página após o submit
+            const repositorio = document.querySelector("#repositorio").value;
+            const dataInicial = document.querySelector("#dataInicial").value;
+            const dataFinal = document.querySelector("#dataFinal").value;
+            //console.log(repositorio + " " + dataInicial + " " + dataFinal);
 
-    <section class="cidade_data">
-      <div style="display: flex; flex-direction: column; flex: 1 1 0%;">
-          <Label for="cidade">Cidade:</Label>
-          <input type="text" name="cidade">
-      </div>
-      <div  style="display: flex; flex-direction: column; flex: 1 1 0%;">
-          <label for="datapagamento">Data:</label>
-          <input type="date" name="datapagamento">
-      </div>
-    </section>
+            buscarCommits(repositorio, dataInicial, dataFinal);
+        });
 
-      <label for="emissor">Nome do Emissor:</label>
-      <input type="text" name="emissor">
+        function buscarCommits(repositorio, dataInicial, dataFinal) {
+            // Colocar no final da URL ? caso queira colocar mais parâmetros
+            // Para separar os parâmetros, utilizar &
+            // per_page = 100: demostra o máximo de itens que aparecem na página
+            const url = `https://api.github.com/repos/${repositorio}/commits?since=${dataInicial}&until=${dataFinal}&per_page=100`;
 
-      <label for="telefone_emissor">Telefone (opcional):</label>
-      <input type="number" name="telefone_emissor">
+            //Assíncrona: não vai travar a página. Caso exista uma resposta dessa chamada, ele vai executar o que tem dentro do then enquanto a execução da página continua.
+            fetch(url).then(response => response.json()).then(commits => {
+                // Demonstra no console do navegador os commits
+                console.log(commits);
+                contarCommits(commits);
+            });
 
-      <label for="cpf_cnpj_emissor">CPF ou CNPJ (opcional):</label>
-      <input type="number" name="cpf_cnpj_emissor">
+            console.log(new Date());
+        }
 
-      <label for="observacoes">Observações:</label>
-      <input type="text" name="observacoes">
+        function contarCommits(commits) {
+            const commitsPorDia = {};
 
-      <input type="submit" value="Gerar Recibo" />
-  </form>
+            commits.forEach(element => {
+                // Procurará a data dentro do objeto
+                // date.substr(0,10): pegará apenas a data, ou seja, sem a hora
+                const dataCommit = element.commit.author.date.substr(0, 10);
 
-  <script src="index.js"></script>
+                // Verifica se existe dentro desse objeto esse atributo
+                if (commitsPorDia[dataCommit]) {
+                    commitsPorDia[dataCommit].quantidade++;
+                }
+                // Caso não existe, eu crio a quantidade = 1 e com a data do commit
+                else {
+                    commitsPorDia[dataCommit] = { quantidade: 1, data: dataCommit };
+                }
+            });
+
+            console.log(commitsPorDia);
+
+            //const commitsPorDiaArray = Object.keys(commitsPorDia).map(dataCommit => {
+                return { data: dataCommit, quantidade: commitsPorDia[dataCommit].quantidade };
+            });
+
+            console.log(commitsPorDiaArray);
+
+            mostrarTela(commitsPorDiaArray);
+        }
+
+        function mostrarTela(commits) {
+            const dados = document.querySelector("#dados");
+
+            commits.forEach(element => {
+                const h1 = document.createElement("h1");
+
+                h1.innerHTML = element.data + " - " + element.quantidade;
+                dados.appendChild(h1);
+            });
+
+        }
+
+    </script>
 </body>
+
 </html>
